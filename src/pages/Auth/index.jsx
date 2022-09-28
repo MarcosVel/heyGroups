@@ -1,4 +1,3 @@
-import { Link } from "@react-navigation/native";
 import { useState } from "react";
 import {
   Keyboard,
@@ -10,7 +9,8 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-export default function SignIn() {
+export default function Auth() {
+  const [typeCreate, setTypeCreate] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,13 +23,15 @@ export default function SignIn() {
           Ajude, colabore, faça networking!
         </Text>
 
-        <TextInput
-          style={styles.input}
-          value={name}
-          placeholder="Nome"
-          onTextChange={text => setName(text)}
-          placeholderTextColor="#999"
-        />
+        {typeCreate && (
+          <TextInput
+            style={styles.input}
+            value={name}
+            placeholder="Nome"
+            onTextChange={text => setName(text)}
+            placeholderTextColor="#999"
+          />
+        )}
 
         <TextInput
           style={styles.input}
@@ -48,12 +50,16 @@ export default function SignIn() {
         />
 
         <TouchableOpacity style={styles.btn}>
-          <Text style={styles.btnText}>Cadastrar</Text>
+          <Text style={styles.btnText}>
+            {typeCreate ? "Cadastrar" : "Acessar"}
+          </Text>
         </TouchableOpacity>
 
-        <Link style={styles.link} to="/ChatRoom">
-          Já possuo uma conta
-        </Link>
+        <TouchableOpacity onPress={() => setTypeCreate(!typeCreate)}>
+          <Text style={styles.textLink}>
+            {typeCreate ? "Já possuo uma conta" : "Criar uma nova conta"}
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -102,7 +108,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontWeight: "bold",
   },
-  link: {
+  textLink: {
     color: "#AEAEAE",
     fontWeight: "bold",
   },

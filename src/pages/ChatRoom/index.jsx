@@ -7,7 +7,7 @@ export default function ChatRoom() {
   return (
     <View style={styles.container}>
       <Text>ChatRoom</Text>
-      <Button title="Login" onPress={() => navigation.navigate("SignIn")} />
+      <Button title="Login" onPress={() => navigation.navigate("Auth")} />
     </View>
   );
 }
