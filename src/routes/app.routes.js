@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import ChatRoom from "../pages/ChatRoom";
-import SignIn from "../pages/SignIn";
+import Auth from "../pages/Auth";
 
 const AppStack = createNativeStackNavigator();
 
@@ -9,8 +9,8 @@ function AppRoutes() {
   return (
     <AppStack.Navigator initialRouteName="ChatRoom">
       <AppStack.Screen
-        name="SignIn"
-        component={SignIn}
+        name="Auth"
+        component={Auth}
         options={{ title: "Faça login" }}
       />
       <AppStack.Screen
