@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
   Keyboard,
@@ -8,12 +9,58 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
+import firebase from "../../services/firebaseConnection";
 
 export default function Auth() {
+  const navigation = useNavigation();
   const [typeCreate, setTypeCreate] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  function handleLogin() {
+    if (typeCreate) {
+      if (name === "" || email === "" || password === "") {
+        return console.warn("Complete todos os campos");
+      }
+
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(snapshot => {
+          snapshot.user
+            .updateProfile({
+              displayName: name,
+            })
+            .then(() => {
+              navigation.goBack();
+            });
+        })
+        .catch(err => {
+          if (err.code === "auth/email-already-in-use") {
+            console.warn("Email already in use");
+          } else if (err.code === "auth/invalid-email") {
+            console.warn("Invalid email");
+          } else {
+            console.log("Error creating user", err);
+          }
+        });
+    } else {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          navigation.goBack();
+        })
+        .catch(err => {
+          if (err.code === "auth/invalid-email") {
+            console.warn("Invalid email");
+          } else {
+            console.log("Error creating user", err);
+          }
+        });
+    }
+  }
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -28,7 +75,7 @@ export default function Auth() {
             style={styles.input}
             value={name}
             placeholder="Nome"
-            onTextChange={text => setName(text)}
+            onChangeText={text => setName(text)}
             placeholderTextColor="#999"
           />
         )}
@@ -37,7 +84,7 @@ export default function Auth() {
           style={styles.input}
           value={email}
           placeholder="seuemail@email.com"
-          onTextChange={text => setEmail(text)}
+          onChangeText={text => setEmail(text)}
           placeholderTextColor="#999"
         />
 
@@ -45,11 +92,12 @@ export default function Auth() {
           style={styles.input}
           value={password}
           placeholder="******"
-          onTextChange={text => setPassword(text)}
+          secureTextEntry
+          onChangeText={text => setPassword(text)}
           placeholderTextColor="#999"
         />
 
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity style={styles.btn} onPress={() => handleLogin()}>
           <Text style={styles.btnText}>
             {typeCreate ? "Cadastrar" : "Acessar"}
           </Text>
