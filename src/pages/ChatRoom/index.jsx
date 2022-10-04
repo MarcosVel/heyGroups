@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { useRef } from "react";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -21,6 +21,16 @@ import firebase from "../../services/firebaseConnection";
 export default function ChatRoom() {
   const navigation = useNavigation();
   const modalizeRef = useRef(null);
+  const isFocused = useIsFocused();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const hasUser = firebase.auth().currentUser
+      ? firebase.auth().currentUser.toJSON()
+      : null;
+
+    setUser(hasUser);
+  }, [isFocused]);
 
   function handleSignOut() {
     firebase
@@ -70,7 +80,7 @@ export default function ChatRoom() {
             </TouchableOpacity>
           </View>
 
-          <FabButton setVisible={() => onOpen()} />
+          <FabButton userStatus={user} setVisible={() => onOpen()} />
         </SafeAreaView>
 
         <Modalize
