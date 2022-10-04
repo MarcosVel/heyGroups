@@ -42,7 +42,10 @@ export default function ChatRoom() {
     return (
       <KeyboardAvoidingView>
         <Text style={styles.modalTitle}>Criar um novo grupo?</Text>
-        <TextInput placeholder="Nome do grupo" />
+        <TextInput style={styles.input} placeholder="Nome do grupo" />
+        <TouchableOpacity activeOpacity={0.6} style={styles.btnCreate}>
+          <Text style={styles.btnText}>Criar sala</Text>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     );
   };
@@ -54,12 +57,15 @@ export default function ChatRoom() {
           <StatusBar barStyle="light-content" backgroundColor="#2E54D4" />
           <View style={styles.header}>
             <View style={styles.chatBack}>
-              <TouchableOpacity onPress={() => handleSignOut()}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => handleSignOut()}
+              >
                 <Ionicons name="arrow-back-outline" size={28} color="#fff" />
               </TouchableOpacity>
               <Text style={styles.title}>Grupos</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.6}>
               <Ionicons name="search" size={28} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -69,7 +75,7 @@ export default function ChatRoom() {
 
         <Modalize
           ref={modalizeRef}
-          modalHeight={200}
+          modalHeight={230}
           keyboardAvoidingBehavior="height"
           modalStyle={{
             backgroundColor: "#F6F6F6",
@@ -115,6 +121,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#1b1b1b",
     marginBottom: 24,
+    textAlign: "center",
+  },
+  input: {
+    backgroundColor: "#FFF",
+    borderColor: "#e6e6e6",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+  },
+  btnCreate: {
+    marginTop: 16,
+    backgroundColor: "#2E54D4",
+    padding: 12,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: "#fff",
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: "bold",
     textAlign: "center",
   },
 });
