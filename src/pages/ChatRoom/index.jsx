@@ -37,6 +37,7 @@ export default function ChatRoom() {
       .auth()
       .signOut()
       .then(() => {
+        setUser(null);
         navigation.navigate("Auth");
       })
       .catch(() => {
@@ -67,12 +68,14 @@ export default function ChatRoom() {
           <StatusBar barStyle="light-content" backgroundColor="#2E54D4" />
           <View style={styles.header}>
             <View style={styles.chatBack}>
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={() => handleSignOut()}
-              >
-                <Ionicons name="arrow-back-outline" size={28} color="#fff" />
-              </TouchableOpacity>
+              {user && (
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => handleSignOut()}
+                >
+                  <Ionicons name="arrow-back-outline" size={28} color="#fff" />
+                </TouchableOpacity>
+              )}
               <Text style={styles.title}>Grupos</Text>
             </View>
             <TouchableOpacity activeOpacity={0.6}>
