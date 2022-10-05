@@ -1,10 +1,13 @@
 import { Entypo } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-export default function FabButton({ setVisible }) {
+export default function FabButton({ userStatus, setVisible }) {
+  const navigation = useNavigation();
+
   function handleNavigation() {
-    setVisible();
+    userStatus ? setVisible() : navigation.navigate("Auth");
   }
 
   return (

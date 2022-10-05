@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import ChatRoom from "../pages/ChatRoom";
 import Auth from "../pages/Auth";
+import ChatRoom from "../pages/ChatRoom";
 
 const AppStack = createNativeStackNavigator();
 
