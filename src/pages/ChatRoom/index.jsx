@@ -23,6 +23,7 @@ export default function ChatRoom() {
   const modalizeRef = useRef(null);
   const isFocused = useIsFocused();
   const [user, setUser] = useState(null);
+  const [roomName, setRoomName] = useState("");
 
   useEffect(() => {
     const hasUser = firebase.auth().currentUser
@@ -45,6 +46,39 @@ export default function ChatRoom() {
       });
   }
 
+  function createRoom() {
+    if (roomName === "") return;
+
+    firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .add({
+        name: roomName,
+        owner: user.uid,
+        lastMessage: {
+          text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        },
+      })
+      .then(docRef => {
+        docRef
+          .collection("messages")
+          .add({
+            text: `Grupo ${roomName} criado. Bem vindo(a)!`,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            system: true,
+          })
+          .then(() => {
+            setRoomName("");
+            Keyboard.dismiss();
+            modalizeRef.current?.close();
+          });
+      })
+      .catch(err => {
+        console.log("Creat group error:", err);
+      });
+  }
+
   const onOpen = () => {
     modalizeRef.current?.open();
   };
@@ -53,8 +87,17 @@ export default function ChatRoom() {
     return (
       <KeyboardAvoidingView>
         <Text style={styles.modalTitle}>Criar um novo grupo?</Text>
-        <TextInput style={styles.input} placeholder="Nome do grupo" />
-        <TouchableOpacity activeOpacity={0.6} style={styles.btnCreate}>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do grupo"
+          value={roomName}
+          onChangeText={text => setRoomName(text)}
+        />
+        <TouchableOpacity
+          activeOpacity={0.6}
+          style={styles.btnCreate}
+          onPress={() => createRoom()}
+        >
           <Text style={styles.btnText}>Criar sala</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -93,6 +136,9 @@ export default function ChatRoom() {
           modalStyle={{
             backgroundColor: "#F6F6F6",
             padding: 28,
+          }}
+          scrollViewProps={{
+            keyboardShouldPersistTaps: "handled",
           }}
         >
           {modalContent()}
