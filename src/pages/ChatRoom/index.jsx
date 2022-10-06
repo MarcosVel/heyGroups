@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -21,6 +22,8 @@ export default function ChatRoom() {
   const modalizeRef = useRef(null);
   const isFocused = useIsFocused();
   const [user, setUser] = useState(null);
+  const [threads, setThreads] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const hasUser = firebase.auth().currentUser
@@ -28,6 +31,40 @@ export default function ChatRoom() {
       : null;
 
     setUser(hasUser);
+  }, [isFocused]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    function getGroups() {
+      firebase
+        .firestore()
+        .collection("MESSAGE_THREADS")
+        .orderBy("lastMessage.createdAt", "desc")
+        .limit(10)
+        .get()
+        .then(snapshot => {
+          const firestoreThreads = snapshot.docs.map(doc => {
+            return {
+              _id: doc.id,
+              name: "",
+              lastMessage: { text: "" },
+              ...doc.data(),
+            };
+          });
+
+          if (isActive) {
+            setThreads(firestoreThreads);
+            setLoading(false);
+          }
+        });
+    }
+
+    getGroups();
+
+    return () => {
+      isActive = false;
+    };
   }, [isFocused]);
 
   function handleSignOut() {
@@ -47,7 +84,11 @@ export default function ChatRoom() {
     modalizeRef.current?.open();
   };
 
-  return (
+  return loading ? (
+    <SafeAreaView style={styles.loading}>
+      <ActivityIndicator size="large" color="#2E54D4" />
+    </SafeAreaView>
+  ) : (
     <>
       <CustomStatusBar bgBlue={true} />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -85,6 +126,11 @@ export default function ChatRoom() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
   },
