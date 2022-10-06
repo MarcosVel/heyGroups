@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Keyboard,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,6 +13,7 @@ import {
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import FabButton from "../../components/FabButton";
 import ModalNewGroup from "../../components/ModalNewGroup";
+import CustomStatusBar from "../../components/StatusBar";
 import firebase from "../../services/firebaseConnection";
 
 export default function ChatRoom() {
@@ -48,33 +48,39 @@ export default function ChatRoom() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <GestureHandlerRootView style={styles.container}>
-        <SafeAreaView style={styles.container}>
-          <StatusBar barStyle="light-content" backgroundColor="#2E54D4" />
-          <View style={styles.header}>
-            <View style={styles.chatBack}>
-              {user && (
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  onPress={() => handleSignOut()}
-                >
-                  <Ionicons name="arrow-back-outline" size={28} color="#fff" />
-                </TouchableOpacity>
-              )}
-              <Text style={styles.title}>Grupos</Text>
+    <>
+      <CustomStatusBar bgBlue={true} />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <GestureHandlerRootView style={styles.container}>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+              <View style={styles.chatBack}>
+                {user && (
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => handleSignOut()}
+                  >
+                    <Ionicons
+                      name="arrow-back-outline"
+                      size={28}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                )}
+                <Text style={styles.title}>Grupos</Text>
+              </View>
+              <TouchableOpacity activeOpacity={0.6}>
+                <Ionicons name="search" size={28} color="#fff" />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity activeOpacity={0.6}>
-              <Ionicons name="search" size={28} color="#fff" />
-            </TouchableOpacity>
-          </View>
 
-          <FabButton userStatus={user} setVisible={() => onOpen()} />
-        </SafeAreaView>
+            <FabButton userStatus={user} setVisible={() => onOpen()} />
+          </SafeAreaView>
 
-        <ModalNewGroup modalizeRef={modalizeRef} user={user} />
-      </GestureHandlerRootView>
-    </TouchableWithoutFeedback>
+          <ModalNewGroup modalizeRef={modalizeRef} user={user} />
+        </GestureHandlerRootView>
+      </TouchableWithoutFeedback>
+    </>
   );
 }
 

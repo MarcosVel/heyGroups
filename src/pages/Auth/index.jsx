@@ -2,13 +2,16 @@ import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
   Keyboard,
+  KeyboardAvoidingView,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  View,
 } from "react-native";
+import CustomStatusBar from "../../components/StatusBar";
 import firebase from "../../services/firebaseConnection";
 
 export default function Auth() {
@@ -63,53 +66,66 @@ export default function Auth() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.logo}>HeyGroups</Text>
-        <Text style={styles.description}>
-          Ajude, colabore, faça networking!
-        </Text>
+    <>
+      <CustomStatusBar />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <SafeAreaView style={styles.container}>
+          <KeyboardAvoidingView
+            style={styles.avoidingView}
+            behavior={Platform.OS === "ios" && "padding"}
+          >
+            <View style={styles.content}>
+              <Text style={styles.logo}>HeyGroups</Text>
+              <Text style={styles.description}>
+                Ajude, colabore, faça networking!
+              </Text>
 
-        {typeCreate && (
-          <TextInput
-            style={styles.input}
-            value={name}
-            placeholder="Nome"
-            onChangeText={text => setName(text)}
-            placeholderTextColor="#999"
-          />
-        )}
+              {typeCreate && (
+                <TextInput
+                  style={styles.input}
+                  value={name}
+                  placeholder="Nome"
+                  onChangeText={text => setName(text)}
+                  placeholderTextColor="#999"
+                />
+              )}
 
-        <TextInput
-          style={styles.input}
-          value={email}
-          placeholder="seuemail@email.com"
-          onChangeText={text => setEmail(text)}
-          placeholderTextColor="#999"
-        />
+              <TextInput
+                style={styles.input}
+                value={email}
+                placeholder="seuemail@email.com"
+                onChangeText={text => setEmail(text)}
+                placeholderTextColor="#999"
+              />
 
-        <TextInput
-          style={styles.input}
-          value={password}
-          placeholder="******"
-          secureTextEntry
-          onChangeText={text => setPassword(text)}
-          placeholderTextColor="#999"
-        />
+              <TextInput
+                style={styles.input}
+                value={password}
+                placeholder="******"
+                secureTextEntry
+                onChangeText={text => setPassword(text)}
+                placeholderTextColor="#999"
+              />
 
-        <TouchableOpacity style={styles.btn} onPress={() => handleLogin()}>
-          <Text style={styles.btnText}>
-            {typeCreate ? "Cadastrar" : "Acessar"}
-          </Text>
-        </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.btn}
+                onPress={() => handleLogin()}
+              >
+                <Text style={styles.btnText}>
+                  {typeCreate ? "Cadastrar" : "Acessar"}
+                </Text>
+              </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setTypeCreate(!typeCreate)}>
-          <Text style={styles.textLink}>
-            {typeCreate ? "Já possuo uma conta" : "Criar uma nova conta"}
-          </Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+              <TouchableOpacity onPress={() => setTypeCreate(!typeCreate)}>
+                <Text style={styles.textLink}>
+                  {typeCreate ? "Já possuo uma conta" : "Criar uma nova conta"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </>
   );
 }
 
@@ -119,6 +135,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#F6F6F6",
+  },
+  avoidingView: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  content: {
+    width: "100%",
+    alignItems: "center",
   },
   logo: {
     fontSize: 28,
