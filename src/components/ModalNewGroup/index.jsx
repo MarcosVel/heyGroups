@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import {
   Keyboard,
-  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { Modalize } from "react-native-modalize";
 import firebase from "../../services/firebaseConnection";
@@ -49,8 +50,8 @@ export default function ModalNewGroup({ modalizeRef, user }) {
   return (
     <Modalize
       ref={modalizeRef}
-      modalHeight={230}
-      keyboardAvoidingBehavior="height"
+      adjustToContentHeight
+      keyboardAvoidingBehavior={Platform.OS === "ios" ? "padding" : "height"}
       modalStyle={{
         backgroundColor: "#F6F6F6",
         padding: 28,
@@ -59,7 +60,7 @@ export default function ModalNewGroup({ modalizeRef, user }) {
         keyboardShouldPersistTaps: "handled",
       }}
     >
-      <KeyboardAvoidingView>
+      <View>
         <Text style={styles.modalTitle}>Criar um novo grupo?</Text>
         <TextInput
           style={styles.input}
@@ -74,7 +75,7 @@ export default function ModalNewGroup({ modalizeRef, user }) {
         >
           <Text style={styles.btnText}>Criar sala</Text>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+      </View>
     </Modalize>
   );
 }
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#2E54D4",
     padding: 12,
     borderRadius: 8,
+    marginBottom: Platform.OS === "ios" ? 48 : 8,
   },
   btnText: {
     color: "#fff",

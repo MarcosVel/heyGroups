@@ -96,6 +96,7 @@ export default function Auth() {
                 placeholder="seuemail@email.com"
                 onChangeText={text => setEmail(text)}
                 placeholderTextColor="#999"
+                autoCapitalize="none"
               />
 
               <TextInput
