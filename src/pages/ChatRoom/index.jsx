@@ -67,7 +67,7 @@ export default function ChatRoom() {
     return () => {
       isActive = false;
     };
-  }, [isFocused]);
+  }, [isFocused, threads]);
 
   function handleSignOut() {
     firebase
