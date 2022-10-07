@@ -2,6 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  FlatList,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -11,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ChatList from "../../components/ChatList";
 import FabButton from "../../components/FabButton";
 import ModalNewGroup from "../../components/ModalNewGroup";
 import CustomStatusBar from "../../components/StatusBar";
@@ -21,6 +24,8 @@ export default function ChatRoom() {
   const modalizeRef = useRef(null);
   const isFocused = useIsFocused();
   const [user, setUser] = useState(null);
+  const [threads, setThreads] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const hasUser = firebase.auth().currentUser
@@ -29,6 +34,40 @@ export default function ChatRoom() {
 
     setUser(hasUser);
   }, [isFocused]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    function getGroups() {
+      firebase
+        .firestore()
+        .collection("MESSAGE_THREADS")
+        .orderBy("lastMessage.createdAt", "desc")
+        .limit(10)
+        .get()
+        .then(snapshot => {
+          const firestoreThreads = snapshot.docs.map(doc => {
+            return {
+              _id: doc.id,
+              name: "",
+              lastMessage: { text: "" },
+              ...doc.data(),
+            };
+          });
+
+          if (isActive) {
+            setThreads(firestoreThreads);
+            setLoading(false);
+          }
+        });
+    }
+
+    getGroups();
+
+    return () => {
+      isActive = false;
+    };
+  }, [isFocused, threads]);
 
   function handleSignOut() {
     firebase
@@ -47,7 +86,11 @@ export default function ChatRoom() {
     modalizeRef.current?.open();
   };
 
-  return (
+  return loading ? (
+    <SafeAreaView style={styles.loading}>
+      <ActivityIndicator size="large" color="#2E54D4" />
+    </SafeAreaView>
+  ) : (
     <>
       <CustomStatusBar bgBlue={true} />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -74,6 +117,16 @@ export default function ChatRoom() {
               </TouchableOpacity>
             </View>
 
+            <FlatList
+              data={threads}
+              keyExtractor={item => item._id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => <ChatList data={item} />}
+              contentContainerStyle={{
+                paddingVertical: 8,
+              }}
+            />
+
             <FabButton userStatus={user} setVisible={() => onOpen()} />
           </SafeAreaView>
 
@@ -85,6 +138,11 @@ export default function ChatRoom() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
   },
