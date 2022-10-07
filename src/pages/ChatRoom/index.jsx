@@ -3,6 +3,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   Keyboard,
   SafeAreaView,
   StyleSheet,
@@ -12,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ChatList from "../../components/ChatList";
 import FabButton from "../../components/FabButton";
 import ModalNewGroup from "../../components/ModalNewGroup";
 import CustomStatusBar from "../../components/StatusBar";
@@ -114,6 +116,16 @@ export default function ChatRoom() {
                 <Ionicons name="search" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
+
+            <FlatList
+              data={threads}
+              keyExtractor={item => item._id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => <ChatList data={item} />}
+              contentContainerStyle={{
+                paddingVertical: 8,
+              }}
+            />
 
             <FabButton userStatus={user} setVisible={() => onOpen()} />
           </SafeAreaView>
