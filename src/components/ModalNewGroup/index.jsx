@@ -15,8 +15,6 @@ export default function ModalNewGroup({ modalizeRef, user }) {
   const [roomName, setRoomName] = useState("");
 
   function createRoom() {
-    if (roomName === "") return;
-
     firebase
       .firestore()
       .collection("MESSAGE_THREADS")
@@ -47,6 +45,29 @@ export default function ModalNewGroup({ modalizeRef, user }) {
       });
   }
 
+  function handleCreateGroup() {
+    if (roomName === "") return;
+
+    firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .get()
+      .then(snapshot => {
+        let userRooms = 0;
+        snapshot.docs.map(doc => {
+          if (doc.data().owner === user.uid) {
+            userRooms += 1;
+          }
+        });
+
+        if (userRooms >= 3) {
+          return alert("Limite de salas atingido!");
+        } else {
+          createRoom();
+        }
+      });
+  }
+
   return (
     <Modalize
       ref={modalizeRef}
@@ -71,7 +92,7 @@ export default function ModalNewGroup({ modalizeRef, user }) {
         <TouchableOpacity
           activeOpacity={0.6}
           style={styles.btnCreate}
-          onPress={() => createRoom()}
+          onPress={() => handleCreateGroup()}
         >
           <Text style={styles.btnText}>Criar sala</Text>
         </TouchableOpacity>
