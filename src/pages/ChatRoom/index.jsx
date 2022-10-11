@@ -3,6 +3,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Keyboard,
   SafeAreaView,
@@ -26,6 +27,7 @@ export default function ChatRoom() {
   const [user, setUser] = useState(null);
   const [threads, setThreads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updateList, setUpdateList] = useState(false);
 
   useEffect(() => {
     const hasUser = firebase.auth().currentUser
@@ -67,7 +69,7 @@ export default function ChatRoom() {
     return () => {
       isActive = false;
     };
-  }, [isFocused, threads]);
+  }, [isFocused, updateList]);
 
   function handleSignOut() {
     firebase
@@ -85,6 +87,28 @@ export default function ChatRoom() {
   const onOpen = () => {
     modalizeRef.current?.open();
   };
+
+  function deleteRoom(idOwner, idRoom) {
+    console.log("idOwner:", idOwner);
+    console.log("deletar:", idRoom);
+
+    if (idOwner !== user?.uid) return;
+
+    Alert.alert("Atenção!", "Você tem certeza que deseja deletar essa sala?", [
+      { text: "Cancel", onPress: () => {}, style: "cancel" },
+      { text: "OK", onPress: () => handleDeleteGroup(idRoom) },
+    ]);
+  }
+
+  async function handleDeleteGroup(idRoom) {
+    await firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .doc(idRoom)
+      .delete();
+
+    setUpdateList(!updateList);
+  }
 
   return loading ? (
     <SafeAreaView style={styles.loading}>
@@ -121,7 +145,12 @@ export default function ChatRoom() {
               data={threads}
               keyExtractor={item => item._id}
               showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => <ChatList data={item} />}
+              renderItem={({ item }) => (
+                <ChatList
+                  data={item}
+                  deleteRoom={() => deleteRoom(item.owner, item._id)}
+                />
+              )}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
@@ -130,7 +159,11 @@ export default function ChatRoom() {
             <FabButton userStatus={user} setVisible={() => onOpen()} />
           </SafeAreaView>
 
-          <ModalNewGroup modalizeRef={modalizeRef} user={user} />
+          <ModalNewGroup
+            modalizeRef={modalizeRef}
+            user={user}
+            setUpdateList={() => setUpdateList(!updateList)}
+          />
         </GestureHandlerRootView>
       </TouchableWithoutFeedback>
     </>

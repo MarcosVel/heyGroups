@@ -1,9 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-export default function ChatList({ data }) {
+export default function ChatList({ data, deleteRoom }) {
   return (
-    <TouchableOpacity style={styles.chatRoom} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.chatRoom}
+      activeOpacity={0.7}
+      onLongPress={deleteRoom}
+    >
       <Text style={styles.name} numberOfLines={1}>
         {data?.name}
       </Text>

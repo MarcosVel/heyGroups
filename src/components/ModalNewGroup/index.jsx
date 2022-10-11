@@ -11,7 +11,7 @@ import {
 import { Modalize } from "react-native-modalize";
 import firebase from "../../services/firebaseConnection";
 
-export default function ModalNewGroup({ modalizeRef, user }) {
+export default function ModalNewGroup({ modalizeRef, user, setUpdateList }) {
   const [roomName, setRoomName] = useState("");
 
   function createRoom() {
@@ -38,6 +38,7 @@ export default function ModalNewGroup({ modalizeRef, user }) {
             setRoomName("");
             Keyboard.dismiss();
             modalizeRef.current?.close();
+            setUpdateList();
           });
       })
       .catch(err => {
