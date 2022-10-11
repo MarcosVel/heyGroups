@@ -89,9 +89,6 @@ export default function ChatRoom() {
   };
 
   function deleteRoom(idOwner, idRoom) {
-    console.log("idOwner:", idOwner);
-    console.log("deletar:", idRoom);
-
     if (idOwner !== user?.uid) return;
 
     Alert.alert("Atenção!", "Você tem certeza que deseja deletar essa sala?", [
@@ -149,6 +146,7 @@ export default function ChatRoom() {
                 <ChatList
                   data={item}
                   deleteRoom={() => deleteRoom(item.owner, item._id)}
+                  userStatus={user}
                 />
               )}
               contentContainerStyle={{

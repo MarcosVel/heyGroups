@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Messages() {
+export default function Messages({ route }) {
+  const { thread } = route.params;
+
   return (
     <View style={styles.container}>
       <Text>Messages</Text>
