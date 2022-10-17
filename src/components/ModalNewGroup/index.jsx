@@ -28,7 +28,7 @@ export default function ModalNewGroup({ modalizeRef, user, setUpdateList }) {
       })
       .then(docRef => {
         docRef
-          .collection("messages")
+          .collection("MESSAGES")
           .add({
             text: `Grupo ${roomName} criado. Bem vindo(a)!`,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),

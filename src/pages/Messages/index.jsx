@@ -26,7 +26,7 @@ export default function Messages({ route }) {
       .firestore()
       .collection("MESSAGE_THREADS")
       .doc(thread._id)
-      .collection("messages")
+      .collection("MESSAGES")
       .orderBy("createdAt", "desc")
       .onSnapshot(querySnapshot => {
         const groupMessages = querySnapshot.docs.map(doc => {
@@ -55,6 +55,42 @@ export default function Messages({ route }) {
     return () => unsubscribeListener();
   }, []);
 
+  async function sendMessage() {
+    if (input === "") return;
+
+    await firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .doc(thread._id)
+      .collection("MESSAGES")
+      .add({
+        text: input,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        user: {
+          _id: user.uid,
+          displayName: user.displayName,
+        },
+      });
+
+    await firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .doc(thread._id)
+      .set(
+        {
+          lastMessage: {
+            text: input,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        {
+          merge: true,
+        }
+      );
+
+    setInput("");
+  }
+
   return (
     <>
       <CustomStatusBar />
@@ -65,6 +101,7 @@ export default function Messages({ route }) {
             data={messages}
             keyExtractor={item => item._id}
             renderItem={({ item }) => <Message data={item} user={user} />}
+            inverted
           />
 
           <KeyboardAvoidingView
@@ -79,7 +116,14 @@ export default function Messages({ route }) {
                 onChangeText={text => setInput(text)}
                 multiline
               />
-              <TouchableOpacity style={styles.btnSend}>
+              <TouchableOpacity
+                style={[
+                  styles.btnSend,
+                  { backgroundColor: input === "" ? "#a1a1a1" : "#2E54D4" },
+                ]}
+                disabled={input === ""}
+                onPress={sendMessage}
+              >
                 <Feather name="send" size={24} color="#fff" />
               </TouchableOpacity>
             </View>
@@ -124,7 +168,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingLeft: 10,
     justifyContent: "center",
-    backgroundColor: "#2E54D4",
     alignSelf: "flex-end",
   },
 });

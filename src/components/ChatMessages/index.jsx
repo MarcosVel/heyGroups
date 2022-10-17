@@ -32,6 +32,7 @@ export default function Message({ data, user }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
+    marginBottom: 8,
   },
   messageBox: {
     padding: 12,
