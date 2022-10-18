@@ -45,9 +45,7 @@ export default function ChatRoom() {
         .firestore()
         .collection("MESSAGE_THREADS")
         .orderBy("lastMessage.createdAt", "desc")
-        .limit(10)
-        .get()
-        .then(snapshot => {
+        .onSnapshot(snapshot => {
           const firestoreThreads = snapshot.docs.map(doc => {
             return {
               _id: doc.id,
