@@ -2,14 +2,17 @@ import { Feather } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import {
+  FlatList,
   Keyboard,
   Platform,
+  SafeAreaView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import ChatList from "../../components/ChatList";
 import CustomStatusBar from "../../components/StatusBar";
 import firebase from "../../services/firebaseConnection";
 
@@ -17,7 +20,7 @@ export default function Search() {
   const isFocused = useIsFocused();
   const [input, setInput] = useState("");
   const [user, setUser] = useState(null);
-  const [chats, setChats] = useState([]);
+  const [filteredGroups, setFilteredGroups] = useState([]);
 
   useEffect(() => {
     const hasUser = firebase.auth().currentUser
@@ -48,7 +51,7 @@ export default function Search() {
           };
         });
 
-        setChats(threads);
+        setFilteredGroups(threads);
       });
   }
 
@@ -56,7 +59,7 @@ export default function Search() {
     <>
       <CustomStatusBar />
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
           <View style={styles.inputView}>
             <TextInput
               style={styles.input}
@@ -75,7 +78,17 @@ export default function Search() {
               <Feather name="search" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
-        </View>
+
+          <FlatList
+            style={{ width: "100%" }}
+            showsVerticalScrollIndicator={false}
+            data={filteredGroups}
+            keyExtractor={item => item._id}
+            renderItem={({ item }) => (
+              <ChatList data={item} userStatus={user} />
+            )}
+          />
+        </SafeAreaView>
       </TouchableWithoutFeedback>
     </>
   );
