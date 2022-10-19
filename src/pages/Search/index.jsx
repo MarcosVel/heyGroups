@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import {
   Keyboard,
   Platform,
@@ -10,9 +11,46 @@ import {
   View,
 } from "react-native";
 import CustomStatusBar from "../../components/StatusBar";
+import firebase from "../../services/firebaseConnection";
 
 export default function Search() {
+  const isFocused = useIsFocused();
   const [input, setInput] = useState("");
+  const [user, setUser] = useState(null);
+  const [chats, setChats] = useState([]);
+
+  useEffect(() => {
+    const hasUser = firebase.auth().currentUser
+      ? firebase.auth().currentUser.toJSON()
+      : null;
+
+    setUser(hasUser);
+  }, [isFocused]);
+
+  async function handleSearch() {
+    if (input === "") return;
+
+    const responseSearch = await firebase
+      .firestore()
+      .collection("MESSAGE_THREADS")
+      .where("name", ">=", input)
+      .where("name", "<=", input + "\uf8ff")
+      .get()
+      .then(querySnapshot => {
+        const threads = querySnapshot.docs.map(documentSnapshot => {
+          return {
+            _id: documentSnapshot.id,
+            name: "",
+            lastMessage: {
+              text: "",
+            },
+            ...documentSnapshot.data(),
+          };
+        });
+
+        setChats(threads);
+      });
+  }
 
   return (
     <>
@@ -32,7 +70,7 @@ export default function Search() {
                 { backgroundColor: input === "" ? "#a1a1a1" : "#2E54D4" },
               ]}
               disabled={input === ""}
-              // onPress={sendMessage}
+              onPress={handleSearch}
             >
               <Feather name="search" size={24} color="#fff" />
             </TouchableOpacity>

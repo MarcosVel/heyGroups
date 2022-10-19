@@ -132,6 +132,7 @@ export default function ChatRoom() {
                 <Text style={styles.title}>Grupos</Text>
               </View>
               <TouchableOpacity
+                hitSlop={10}
                 activeOpacity={0.6}
                 onPress={() => navigation.navigate("Search")}
               >
