@@ -1,4 +1,4 @@
-# DevPost
+# HeyGroups
 
 • Aplicativo de Chat em tempo real.
 
